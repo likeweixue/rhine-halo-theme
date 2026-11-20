@@ -1,0 +1,101 @@
+<header th:fragment="header" class="site-header">
+  <div
+    class="system-strip"
+    th:if="${theme.config.layout?.show_system_strip ?: true}"
+  >
+    <div class="shell strip-inner">
+      <span class="strip-item">RHINE / ARCHIVE</span>
+      <span class="strip-item">
+        <span class="dot" aria-hidden="true"></span>
+        <span th:text="|HALO ${site.version}|">HALO</span>
+      </span>
+    </div>
+  </div>
+  <div class="shell header-inner">
+    <a class="brand" th:href="@{/}">
+      <span class="brand-name" th:text="${site.title}">莱因</span>
+      <span class="brand-sub" th:text="#{brand.sub}">RHINE / ARCHIVE</span>
+    </a>
+    <nav class="nav" data-nav th:with="menu = ${menuFinder.getPrimary()}">
+      <th:block th:if="${menu != null}">
+        <div class="nav-item" th:each="menuItem : ${menu.menuItems}">
+          <a
+            class="nav-link"
+            th:href="@{${menuItem.status.href}}"
+            th:text="${menuItem.status.displayName}"
+            th:target="${menuItem.spec.target?.value}"
+          ></a>
+          <div class="nav-sub" th:if="${not #lists.isEmpty(menuItem.children)}">
+            <a
+              th:each="child : ${menuItem.children}"
+              th:href="@{${child.status.href}}"
+              th:text="${child.status.displayName}"
+              th:target="${child.spec.target?.value}"
+            ></a>
+          </div>
+        </div>
+      </th:block>
+      <th:block th:if="${menu == null}">
+        <div class="nav-item">
+          <a class="nav-link" th:href="@{/}" th:text="#{nav.home}"></a>
+        </div>
+        <div class="nav-item">
+          <a
+            class="nav-link"
+            th:href="@{${site.routes.archivesUri}}"
+            th:text="#{nav.archives}"
+          ></a>
+        </div>
+        <div class="nav-item">
+          <a
+            class="nav-link"
+            th:href="@{${site.routes.categoriesUri}}"
+            th:text="#{nav.categories}"
+          ></a>
+        </div>
+        <div class="nav-item">
+          <a
+            class="nav-link"
+            th:href="@{${site.routes.tagsUri}}"
+            th:text="#{nav.tags}"
+          ></a>
+        </div>
+      </th:block>
+    </nav>
+    <div class="header-actions">
+      <button class="btn btn-small theme-toggle" type="button" data-theme-toggle>
+        <span class="toggle-icon" data-icon-sun>
+          <svg th:replace="~{modules/icon :: sun}"></svg>
+        </span>
+        <span class="toggle-icon" data-icon-moon>
+          <svg th:replace="~{modules/icon :: moon}"></svg>
+        </span>
+        <span class="theme-label" data-label-light th:text="#{theme.light}">LIGHT</span>
+        <span class="theme-label" data-label-dark th:text="#{theme.dark}">DARK</span>
+      </button>
+      <a
+        class="btn btn-small header-console"
+        sec:authorize="isAuthenticated()"
+        th:href="@{/console}"
+        th:text="#{nav.console}"
+      ></a>
+      <a
+        class="btn btn-small header-login"
+        sec:authorize="isAnonymous()"
+        th:href="@{/login}"
+        th:text="#{nav.login}"
+      ></a>
+      <button
+        class="nav-toggle"
+        type="button"
+        data-nav-toggle
+        th:aria-label="#{nav.menu}"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>

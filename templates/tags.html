@@ -1,0 +1,45 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  th:lang="${#locale.toLanguageTag}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head
+    th:replace="~{modules/head :: head(title=${#messages.msg('tags.title') + ' - ' + site.title}, description=null, type='website', image=${site.logo}, url=${site.url + site.routes.tagsUri})}"
+  ></head>
+  <body>
+    <div th:replace="~{modules/header :: header}"></div>
+    <main class="shell">
+      <header class="page-head">
+        <p class="section-code" th:text="#{tags.code}">TAXONOMY / 标签</p>
+        <h1 class="page-title" th:text="#{tags.title}">标签</h1>
+        <p class="page-meta">
+          <span th:text="${#lists.size(tags)}">0</span>
+          <span th:text="#{tags.title}">标签</span>
+        </p>
+      </header>
+
+      <div class="tag-wall">
+        <a
+          class="tag-chip"
+          th:each="tag, iter : ${tags}"
+          th:href="@{${tag.status.permalink}}"
+        >
+          <span
+            class="tag-index"
+            th:text="${#numbers.formatInteger(iter.count, 2)}"
+          ></span>
+          <span class="tag-name" th:text="${tag.spec.displayName}"></span>
+          <span class="tag-count" th:text="${tag.postCount}">0</span>
+        </a>
+      </div>
+
+      <p class="empty" th:if="${#lists.isEmpty(tags)}" th:text="#{index.empty}"></p>
+    </main>
+    <div th:replace="~{modules/footer :: footer}"></div>
+    <script
+      th:src="@{/assets/js/app.js?v={v}(v=${theme.spec.version})}"
+      defer
+    ></script>
+  </body>
+</html>

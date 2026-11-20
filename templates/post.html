@@ -1,0 +1,159 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  th:lang="${#locale.toLanguageTag}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head
+    th:replace="~{modules/head :: head(title=${post.spec.title + ' - ' + site.title}, description=${post.status.excerpt}, type='article', image=${post.spec.cover ?: site.logo}, url=${site.url + post.status.permalink})}"
+  ></head>
+  <body>
+    <div th:replace="~{modules/header :: header}"></div>
+    <main class="shell">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a th:href="@{/}" th:text="#{nav.home}">首页</a>
+        <th:block th:each="cat : ${post.categories}">
+          <span class="sep" aria-hidden="true">/</span>
+          <a th:href="@{${cat.status.permalink}}" th:text="${cat.spec.displayName}"></a>
+        </th:block>
+        <span class="sep" aria-hidden="true">/</span>
+        <span th:text="${post.spec.title}"></span>
+      </nav>
+
+      <header class="post-header">
+        <p class="section-code">ARCHIVE / POST</p>
+        <h1 class="post-title-xl" th:text="${post.spec.title}">文章标题</h1>
+        <p
+          class="post-lead"
+          th:if="${not #strings.isEmpty(post.status.excerpt)}"
+          th:text="${post.status.excerpt}"
+        ></p>
+        <div class="post-meta post-meta-lg">
+          <span class="meta-item">
+            <span th:replace="~{modules/icon :: clock}"></span>
+            <time
+              th:datetime="${post.spec.publishTime}"
+              th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"
+            ></time>
+          </span>
+          <a
+            class="meta-item"
+            th:if="${post.owner != null}"
+            th:href="@{${post.owner.permalink}}"
+          >
+            <span th:replace="~{modules/icon :: user}"></span>
+            <span th:text="${post.owner.displayName}"></span>
+          </a>
+          <span class="meta-item">
+            <span th:replace="~{modules/icon :: eye}"></span>
+            <span th:text="${post.stats.visit}">0</span>
+            <span th:text="#{post.views}">次阅读</span>
+          </span>
+          <span class="meta-item" th:if="${post.stats.comment gt 0}">
+            <span th:replace="~{modules/icon :: comment}"></span>
+            <span th:text="${post.stats.comment}">0</span>
+            <span th:text="#{post.comments}">条评论</span>
+          </span>
+          <span
+            class="meta-item"
+            data-reading-time
+            th:attr="data-label=#{post.readingTime}"
+          ></span>
+        </div>
+      </header>
+
+      <figure
+        class="post-cover"
+        th:if="${not #strings.isEmpty(post.spec.cover)}"
+      >
+        <img th:src="${post.spec.cover}" th:alt="${post.spec.title}" />
+      </figure>
+
+      <div class="article-grid">
+        <article class="prose" data-prose th:utext="${post.content.content}"></article>
+        <aside
+          class="article-aside"
+          th:if="${theme.config.layout?.show_toc ?: true}"
+        >
+          <nav class="toc" data-toc hidden aria-label="Table of contents">
+            <p class="toc-head" th:text="#{post.toc}">TOC / 目录</p>
+            <div class="toc-list" data-toc-list></div>
+          </nav>
+        </aside>
+      </div>
+
+      <footer class="post-foot">
+        <div th:if="${not #lists.isEmpty(post.tags)}">
+          <p class="section-code" th:text="#{post.tags}">TAGS / 标签</p>
+          <div class="tag-cloud">
+            <a
+              class="badge"
+              th:each="tag : ${post.tags}"
+              th:href="@{${tag.status.permalink}}"
+              th:text="${tag.spec.displayName}"
+            ></a>
+          </div>
+        </div>
+
+        <th:block th:with="cursor = ${postFinder.cursor(post.metadata.name)}">
+          <div
+            class="post-nav"
+            th:if="${cursor.hasPrevious() or cursor.hasNext()}"
+          >
+            <a
+              class="is-prev"
+              th:if="${cursor.hasPrevious()}"
+              th:href="@{${cursor.previous.status.permalink}}"
+            >
+              <span class="nav-label" th:text="#{post.prev}">上一篇</span>
+              <span class="nav-title" th:text="${cursor.previous.spec.title}"></span>
+            </a>
+            <a
+              class="is-next"
+              th:if="${cursor.hasNext()}"
+              th:href="@{${cursor.next.status.permalink}}"
+            >
+              <span class="nav-label" th:text="#{post.next}">下一篇</span>
+              <span class="nav-title" th:text="${cursor.next.spec.title}"></span>
+            </a>
+          </div>
+        </th:block>
+
+        <section class="comments" th:if="${post.spec.allowComment}">
+          <p class="section-code" th:text="#{post.comments.title}">
+            DISCUSSION / 评论
+          </p>
+          <halo:comment
+            group="content.halo.run"
+            kind="Post"
+            th:attr="name=${post.metadata.name}"
+          />
+        </section>
+      </footer>
+    </main>
+    <div th:replace="~{modules/footer :: footer}"></div>
+    <script
+      type="application/ld+json"
+      th:if="${theme.config.seo?.enable_structured_data ?: true}"
+      th:inline="javascript"
+    >
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": /*[[${post.spec.title}]]*/ "",
+        "url": /*[[${site.url + post.status.permalink}]]*/ "",
+        "datePublished": /*[[${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}]]*/ "",
+        "dateModified": /*[[${#temporals.format(post.status.lastModifyTime ?: post.spec.publishTime, 'yyyy-MM-dd')}]]*/ "",
+        "author": {
+          "@type": "Person",
+          "name": /*[[${post.owner?.displayName ?: site.title}]]*/ ""
+        },
+        "image": /*[[${post.spec.cover ?: site.logo}]]*/ ""
+      }
+    </script>
+    <script
+      th:src="@{/assets/js/app.js?v={v}(v=${theme.spec.version})}"
+      defer
+    ></script>
+  </body>
+</html>

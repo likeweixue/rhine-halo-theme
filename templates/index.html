@@ -1,0 +1,144 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  th:lang="${#locale.toLanguageTag}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head
+    th:replace="~{modules/head :: head(title=${site.title}, description=${site.seo?.description ?: site.subtitle}, type='website', image=${site.logo}, url=${posts.first ? site.url : null})}"
+  ></head>
+  <body>
+    <div th:replace="~{modules/header :: header}"></div>
+    <main
+      class="shell"
+      th:with="allCategories=${categoryFinder.listAll()}, allTags=${tagFinder.listAll()}"
+    >
+      <section class="hero">
+        <p class="section-code" th:text="#{index.code}">INDEX / 00</p>
+        <h1 class="hero-title" th:text="${site.title}">莱因</h1>
+        <p
+          class="hero-sub"
+          th:if="${not #strings.isEmpty(site.subtitle)}"
+          th:text="${site.subtitle}"
+        ></p>
+        <dl class="hero-stats">
+          <div class="hero-stat">
+            <dt th:text="#{index.articles}">文章</dt>
+            <dd th:text="${posts.total}">0</dd>
+          </div>
+          <div class="hero-stat">
+            <dt th:text="#{index.categories}">分类</dt>
+            <dd th:text="${#lists.size(allCategories)}">0</dd>
+          </div>
+          <div class="hero-stat">
+            <dt th:text="#{index.tags}">标签</dt>
+            <dd th:text="${#lists.size(allTags)}">0</dd>
+          </div>
+        </dl>
+      </section>
+
+      <div class="index-grid">
+        <section class="index-main">
+          <div class="list-head">
+            <p class="section-code" th:text="#{index.latest}">LATEST / 最近更新</p>
+            <a class="mono-link" th:href="@{${site.routes.archivesUri}}">
+              <span th:text="#{nav.archives}">归档</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <th:block th:each="post, iter : ${posts.items}">
+            <article
+              th:replace="~{modules/post-row :: row(post=${post}, index=${iter.count})}"
+            ></article>
+          </th:block>
+
+          <p
+            class="empty"
+            th:if="${#lists.isEmpty(posts.items)}"
+            th:text="#{index.empty}"
+          ></p>
+
+          <div th:replace="~{modules/pagination :: pager(posts=${posts})}"></div>
+        </section>
+
+        <aside class="sidebar">
+          <section class="module">
+            <p class="module-head">
+              <span th:text="#{index.sidebar.categories}">CATEGORIES / 分类</span>
+              <span th:text="${#lists.size(allCategories)}">0</span>
+            </p>
+            <div class="module-body">
+              <ul class="side-list" th:if="${not #lists.isEmpty(allCategories)}">
+                <li
+                  th:each="category, iter : ${allCategories}"
+                  th:if="${iter.index lt 8}"
+                >
+                  <a th:href="@{${category.status.permalink}}">
+                    <span th:text="${category.spec.displayName}"></span>
+                    <span class="side-count" th:text="${category.postCount}"></span>
+                  </a>
+                </li>
+              </ul>
+              <p
+                class="empty"
+                th:if="${#lists.isEmpty(allCategories)}"
+                th:text="#{index.empty}"
+              ></p>
+            </div>
+          </section>
+
+          <section class="module">
+            <p class="module-head">
+              <span th:text="#{index.sidebar.tags}">TAGS / 标签</span>
+              <span th:text="${#lists.size(allTags)}">0</span>
+            </p>
+            <div class="module-body">
+              <div class="tag-cloud" th:if="${not #lists.isEmpty(allTags)}">
+                <a
+                  class="badge"
+                  th:each="tag, iter : ${allTags}"
+                  th:if="${iter.index lt 12}"
+                  th:href="@{${tag.status.permalink}}"
+                  th:text="${tag.spec.displayName}"
+                ></a>
+              </div>
+              <p
+                class="empty"
+                th:if="${#lists.isEmpty(allTags)}"
+                th:text="#{index.empty}"
+              ></p>
+            </div>
+          </section>
+
+          <section class="module">
+            <p class="module-head">
+              <span th:text="#{index.sidebar.site}">SITE / 站点</span>
+              <span th:text="|v${theme.spec.version}|">v1.0.0</span>
+            </p>
+            <div class="module-body">
+              <div class="side-row">
+                <span th:text="#{index.sidebar.total}">文章总数</span>
+                <span class="side-count" th:text="${posts.total}">0</span>
+              </div>
+              <div class="side-row">
+                <span>HALO</span>
+                <span class="side-count" th:text="${site.version}"></span>
+              </div>
+              <a
+                class="btn btn-small side-btn"
+                th:href="@{${site.routes.archivesUri}}"
+                th:text="#{nav.archives}"
+              ></a>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <div th:replace="~{modules/footer :: footer}"></div>
+    <script
+      th:src="@{/assets/js/app.js?v={v}(v=${theme.spec.version})}"
+      defer
+    ></script>
+  </body>
+</html>

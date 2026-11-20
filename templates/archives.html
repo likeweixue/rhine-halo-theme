@@ -1,0 +1,67 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  th:lang="${#locale.toLanguageTag}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head
+    th:replace="~{modules/head :: head(title=${#messages.msg('archives.title') + ' - ' + site.title}, description=null, type='website', image=${site.logo}, url=${archives.first ? site.url + site.routes.archivesUri : null})}"
+  ></head>
+  <body>
+    <div th:replace="~{modules/header :: header}"></div>
+    <main class="shell">
+      <header class="page-head">
+        <p class="section-code" th:text="#{archives.code}">ARCHIVE / 归档</p>
+        <h1 class="page-title" th:text="#{archives.title}">文章归档</h1>
+        <p class="page-meta">
+          <span th:text="${archives.total}">0</span>
+          <span th:text="#{index.articles}">文章</span>
+        </p>
+      </header>
+
+      <div class="archive-wrap">
+        <section
+          class="archive"
+          th:each="archive : ${archives.items}"
+        >
+          <div class="archive-year">
+            <p class="section-code">YEAR</p>
+            <h2 th:text="${archive.year}">2026</h2>
+          </div>
+          <div class="archive-months">
+            <div class="archive-month" th:each="month : ${archive.months}">
+              <p class="month-label" th:text="|${month.month} /|">01 /</p>
+              <ul class="archive-list">
+                <li th:each="post : ${month.posts}">
+                  <time
+                    th:datetime="${post.spec.publishTime}"
+                    th:text="${#temporals.format(post.spec.publishTime, 'MM-dd')}"
+                  ></time>
+                  <a th:href="@{${post.status.permalink}}" th:text="${post.spec.title}"></a>
+                  <span
+                    class="archive-cat"
+                    th:each="cat : ${post.categories}"
+                    th:text="${cat.spec.displayName}"
+                  ></span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <p
+          class="empty"
+          th:if="${#lists.isEmpty(archives.items)}"
+          th:text="#{index.empty}"
+        ></p>
+
+        <div th:replace="~{modules/pagination :: pager(posts=${archives})}"></div>
+      </div>
+    </main>
+    <div th:replace="~{modules/footer :: footer}"></div>
+    <script
+      th:src="@{/assets/js/app.js?v={v}(v=${theme.spec.version})}"
+      defer
+    ></script>
+  </body>
+</html>

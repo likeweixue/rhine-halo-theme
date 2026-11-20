@@ -1,0 +1,91 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  th:lang="${#locale.toLanguageTag}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head
+    th:replace="~{modules/head :: head(title=${singlePage.spec.title + ' - ' + site.title}, description=${singlePage.status.excerpt}, type='article', image=${singlePage.spec.cover ?: site.logo}, url=${site.url + singlePage.status.permalink})}"
+  ></head>
+  <body>
+    <div th:replace="~{modules/header :: header}"></div>
+    <main class="shell">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a th:href="@{/}" th:text="#{nav.home}">首页</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span th:text="${singlePage.spec.title}"></span>
+      </nav>
+
+      <header class="post-header">
+        <p class="section-code" th:text="#{page.code}">PAGE / 页面</p>
+        <h1 class="post-title-xl" th:text="${singlePage.spec.title}">页面标题</h1>
+        <p
+          class="post-lead"
+          th:if="${not #strings.isEmpty(singlePage.status.excerpt)}"
+          th:text="${singlePage.status.excerpt}"
+        ></p>
+        <div class="post-meta post-meta-lg">
+          <span class="meta-item">
+            <span th:replace="~{modules/icon :: clock}"></span>
+            <time
+              th:datetime="${singlePage.spec.publishTime}"
+              th:text="${#temporals.format(singlePage.spec.publishTime, 'yyyy-MM-dd')}"
+            ></time>
+          </span>
+          <span class="meta-item">
+            <span th:replace="~{modules/icon :: eye}"></span>
+            <span th:text="${singlePage.stats.visit}">0</span>
+            <span th:text="#{post.views}">次阅读</span>
+          </span>
+          <span
+            class="meta-item"
+            data-reading-time
+            th:attr="data-label=#{post.readingTime}"
+          ></span>
+        </div>
+      </header>
+
+      <figure
+        class="post-cover"
+        th:if="${not #strings.isEmpty(singlePage.spec.cover)}"
+      >
+        <img th:src="${singlePage.spec.cover}" th:alt="${singlePage.spec.title}" />
+      </figure>
+
+      <div class="article-grid">
+        <article
+          class="prose"
+          data-prose
+          th:utext="${singlePage.content.content}"
+        ></article>
+        <aside
+          class="article-aside"
+          th:if="${theme.config.layout?.show_toc ?: true}"
+        >
+          <nav class="toc" data-toc hidden aria-label="Table of contents">
+            <p class="toc-head" th:text="#{post.toc}">TOC / 目录</p>
+            <div class="toc-list" data-toc-list></div>
+          </nav>
+        </aside>
+      </div>
+
+      <footer class="post-foot">
+        <section class="comments" th:if="${singlePage.spec.allowComment}">
+          <p class="section-code" th:text="#{post.comments.title}">
+            DISCUSSION / 评论
+          </p>
+          <halo:comment
+            group="content.halo.run"
+            kind="SinglePage"
+            th:attr="name=${singlePage.metadata.name}"
+          />
+        </section>
+      </footer>
+    </main>
+    <div th:replace="~{modules/footer :: footer}"></div>
+    <script
+      th:src="@{/assets/js/app.js?v={v}(v=${theme.spec.version})}"
+      defer
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:fragment="head(title, description, type, image, url)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${title}">莱因</title>
+    <meta
+      name="rhine-color-scheme"
+      th:content="${theme.config.style?.color_scheme ?: 'system'}"
+    />
+    <meta
+      name="rhine-grid"
+      th:content="${(theme.config.style?.show_grid ?: true) ? 'true' : 'false'}"
+    />
+    <link
+      rel="stylesheet"
+      th:href="@{/assets/css/app.css?v={v}(v=${theme.spec.version})}"
+    />
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var schemeMeta = document.querySelector('meta[name="rhine-color-scheme"]');
+        var gridMeta = document.querySelector('meta[name="rhine-grid"]');
+        var fallback = schemeMeta ? schemeMeta.getAttribute("content") : "system";
+        var stored = null;
+        try {
+          stored = window.localStorage.getItem("rhine-theme");
+        } catch (e) {}
+        var media = window.matchMedia
+          ? window.matchMedia("(prefers-color-scheme: dark)")
+          : null;
+        var apply = function (preference) {
+          var theme = preference;
+          if (preference === "system") {
+            theme = media && media.matches ? "dark" : "light";
+          }
+          root.setAttribute("data-theme", theme);
+        };
+        apply(stored === "light" || stored === "dark" ? stored : fallback);
+        if (gridMeta && gridMeta.getAttribute("content") === "false") {
+          root.classList.add("no-grid");
+        }
+        if (media) {
+          var onChange = function () {
+            var current = null;
+            try {
+              current = window.localStorage.getItem("rhine-theme");
+            } catch (e) {}
+            apply(current === "light" || current === "dark" ? current : fallback);
+          };
+          if (media.addEventListener) {
+            media.addEventListener("change", onChange);
+          } else if (media.addListener) {
+            media.addListener(onChange);
+          }
+        }
+      })();
+    </script>
+    <th:block
+      th:replace="~{modules/seo :: meta(title=${title}, description=${description}, type=${type}, image=${image}, url=${url})}"
+    ></th:block>
+  </head>
+</html>

@@ -1,0 +1,34 @@
+<footer th:fragment="footer" class="site-footer">
+  <div class="shell footer-grid">
+    <div>
+      <p class="footer-brand" th:text="${site.title}">莱因</p>
+      <p
+        class="footer-desc"
+        th:text="${site.seo?.description ?: site.subtitle}"
+      ></p>
+    </div>
+    <div>
+      <p class="footer-heading" th:text="#{footer.nav}">NAVIGATION</p>
+      <nav class="footer-nav">
+        <a th:href="@{/}" th:text="#{nav.home}"></a>
+        <a th:href="@{${site.routes.archivesUri}}" th:text="#{nav.archives}"></a>
+        <a th:href="@{${site.routes.categoriesUri}}" th:text="#{nav.categories}"></a>
+        <a th:href="@{${site.routes.tagsUri}}" th:text="#{nav.tags}"></a>
+      </nav>
+    </div>
+    <div class="footer-meta">
+      <p class="footer-heading" th:text="#{footer.meta}">META</p>
+      <p th:text="|${theme.spec.displayName} v${theme.spec.version}|">莱因 v1.0.0</p>
+      <p th:text="|HALO ${site.version}|">HALO</p>
+      <p th:text="#{footer.slogan}">PAPER · INK · ORANGE · SQUARE</p>
+    </div>
+  </div>
+  <div class="shell footer-bottom">
+    <p
+      class="mono"
+      th:text="|© ${#temporals.format(#temporals.createNow(), 'yyyy')} ${site.title}|"
+    ></p>
+    <p class="mono">RHINE / THEME</p>
+  </div>
+  <div class="footer-inject"><halo:footer /></div>
+</footer>

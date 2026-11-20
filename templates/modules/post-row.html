@@ -1,0 +1,38 @@
+<article th:fragment="row(post, index)" class="post-row">
+  <div class="post-num" th:text="${#numbers.formatInteger(index, 2)}">01</div>
+  <div class="post-main">
+    <div class="post-meta">
+      <time
+        th:datetime="${post.spec.publishTime}"
+        th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"
+      ></time>
+      <span
+        class="badge badge-accent"
+        th:if="${post.spec.pinned}"
+        th:text="#{post.pinned}"
+      ></span>
+      <a
+        class="meta-link"
+        th:each="cat : ${post.categories}"
+        th:href="@{${cat.status.permalink}}"
+        th:text="${cat.spec.displayName}"
+      ></a>
+    </div>
+    <h2 class="post-title">
+      <a th:href="@{${post.status.permalink}}" th:text="${post.spec.title}"></a>
+    </h2>
+    <p
+      class="post-excerpt"
+      th:if="${not #strings.isEmpty(post.status.excerpt)}"
+      th:text="${post.status.excerpt}"
+    ></p>
+    <div class="post-tags" th:if="${not #lists.isEmpty(post.tags)}">
+      <a
+        class="badge"
+        th:each="tag : ${post.tags}"
+        th:href="@{${tag.status.permalink}}"
+        th:text="${tag.spec.displayName}"
+      ></a>
+    </div>
+  </div>
+</article>

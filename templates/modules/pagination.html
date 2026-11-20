@@ -1,0 +1,22 @@
+<nav
+  th:fragment="pager(posts)"
+  class="pager"
+  th:if="${posts.hasPrevious() or posts.hasNext()}"
+>
+  <a
+    class="btn btn-small"
+    th:if="${posts.hasPrevious()}"
+    th:href="@{${posts.prevUrl}}"
+    th:text="#{pagination.prev}"
+  ></a>
+  <span
+    class="pager-info"
+    th:text="|${posts.page} / ${posts.totalPages}|"
+  ></span>
+  <a
+    class="btn btn-small"
+    th:if="${posts.hasNext()}"
+    th:href="@{${posts.nextUrl}}"
+    th:text="#{pagination.next}"
+  ></a>
+</nav>

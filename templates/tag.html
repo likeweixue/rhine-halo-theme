@@ -1,0 +1,50 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  th:lang="${#locale.toLanguageTag}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head
+    th:replace="~{modules/head :: head(title=${tag.spec.displayName + ' - ' + site.title}, description=null, type='website', image=${tag.spec.cover ?: site.logo}, url=${site.url + tag.status.permalink})}"
+  ></head>
+  <body>
+    <div th:replace="~{modules/header :: header}"></div>
+    <main class="shell">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a th:href="@{/}" th:text="#{nav.home}">首页</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a th:href="@{${site.routes.tagsUri}}" th:text="#{nav.tags}">标签</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span th:text="${tag.spec.displayName}"></span>
+      </nav>
+
+      <header class="page-head">
+        <p class="section-code" th:text="#{tag.code}">TAG / 标签</p>
+        <h1 class="page-title" th:text="${tag.spec.displayName}">标签名称</h1>
+        <p class="page-meta">
+          <span th:text="${tag.postCount}">0</span>
+          <span th:text="#{category.count}">篇文章</span>
+        </p>
+      </header>
+
+      <div class="list-block">
+        <th:block th:each="post, iter : ${posts.items}">
+          <article
+            th:replace="~{modules/post-row :: row(post=${post}, index=${iter.count})}"
+          ></article>
+        </th:block>
+        <p
+          class="empty"
+          th:if="${#lists.isEmpty(posts.items)}"
+          th:text="#{index.empty}"
+        ></p>
+        <div th:replace="~{modules/pagination :: pager(posts=${posts})}"></div>
+      </div>
+    </main>
+    <div th:replace="~{modules/footer :: footer}"></div>
+    <script
+      th:src="@{/assets/js/app.js?v={v}(v=${theme.spec.version})}"
+      defer
+    ></script>
+  </body>
+</html>

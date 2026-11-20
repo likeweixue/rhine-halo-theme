@@ -1,0 +1,46 @@
+apiVersion: v1alpha1
+kind: Setting
+metadata:
+  name: theme-rhine-setting
+spec:
+  forms:
+    - group: style
+      label: 样式
+      formSchema:
+        - $formkit: radio
+          name: color_scheme
+          label: 默认配色
+          value: system
+          options:
+            - label: 跟随系统
+              value: system
+            - label: 浅色
+              value: light
+            - label: 深色
+              value: dark
+        - $formkit: checkbox
+          name: show_grid
+          label: 显示背景网格
+          value: true
+    - group: layout
+      label: 布局
+      formSchema:
+        - $formkit: checkbox
+          name: show_system_strip
+          label: 显示顶部状态栏
+          value: true
+        - $formkit: checkbox
+          name: show_toc
+          label: 文章页显示目录
+          value: true
+    - group: seo
+      label: SEO
+      formSchema:
+        - $formkit: checkbox
+          name: enable_metadata
+          label: 输出 canonical 与社交分享标签
+          value: true
+        - $formkit: checkbox
+          name: enable_structured_data
+          label: 输出文章结构化数据
+          value: true

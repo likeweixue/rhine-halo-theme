@@ -1,0 +1,16 @@
+apiVersion: theme.halo.run/v1alpha1
+kind: Theme
+metadata:
+  name: theme-rhine
+spec:
+  displayName: 莱因
+  author:
+    name: 莱因
+  description: 工程蓝图与复古印刷气质的 Halo 主题。米纸底色、墨色文字、单色橙强调、直角边框与等宽标注。
+  settingName: "theme-rhine-setting"
+  configMapName: "theme-rhine-configmap"
+  version: 1.0.0
+  requires: ">=2.20.0"
+  license:
+    - name: "MIT"
+      url: "https://opensource.org/licenses/MIT"

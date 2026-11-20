@@ -1,0 +1,34 @@
+<th:block th:fragment="meta(title, description, type, image, url)">
+  <th:block th:if="${theme.config.seo?.enable_metadata ?: true}">
+    <link rel="canonical" th:if="${not #strings.isEmpty(url)}" th:href="${url}" />
+    <meta property="og:site_name" th:content="${site.title}" />
+    <meta property="og:type" th:content="${type} ?: 'website'" />
+    <meta property="og:title" th:content="${title}" />
+    <meta property="og:url" th:if="${not #strings.isEmpty(url)}" th:content="${url}" />
+    <meta
+      property="og:description"
+      th:if="${not #strings.isEmpty(description)}"
+      th:content="${description}"
+    />
+    <meta
+      property="og:image"
+      th:if="${not #strings.isEmpty(image)}"
+      th:content="${image}"
+    />
+    <meta
+      name="twitter:card"
+      th:content="${not #strings.isEmpty(image)} ? 'summary_large_image' : 'summary'"
+    />
+    <meta name="twitter:title" th:content="${title}" />
+    <meta
+      name="twitter:description"
+      th:if="${not #strings.isEmpty(description)}"
+      th:content="${description}"
+    />
+    <meta
+      name="twitter:image"
+      th:if="${not #strings.isEmpty(image)}"
+      th:content="${image}"
+    />
+  </th:block>
+</th:block>

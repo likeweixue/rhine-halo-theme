@@ -1,0 +1,37 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  th:lang="${#locale.toLanguageTag}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head
+    th:replace="~{modules/head :: head(title=${'' + error.status + ' - ' + site.title}, description=null, type='website', image=${site.logo}, url=null)}"
+  ></head>
+  <body>
+    <div th:replace="~{modules/header :: header}"></div>
+    <main class="shell error-page">
+      <p class="section-code" th:text="#{error.code}">SYSTEM / ERROR</p>
+      <p class="error-code" th:text="${error.status}">404</p>
+      <h1 class="error-title" th:text="#{error.404.title}">页面未找到</h1>
+      <p class="error-desc" th:text="#{error.404.desc}"></p>
+      <p
+        class="error-detail"
+        th:if="${not #strings.isEmpty(error.detail)}"
+        th:text="${error.detail}"
+      ></p>
+      <div class="error-actions">
+        <a class="btn btn-primary" th:href="@{/}" th:text="#{error.back}">返回首页</a>
+        <a
+          class="btn"
+          th:href="@{${site.routes.archivesUri}}"
+          th:text="#{nav.archives}"
+        ></a>
+      </div>
+    </main>
+    <div th:replace="~{modules/footer :: footer}"></div>
+    <script
+      th:src="@{/assets/js/app.js?v={v}(v=${theme.spec.version})}"
+      defer
+    ></script>
+  </body>
+</html>
